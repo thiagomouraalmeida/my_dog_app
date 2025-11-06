@@ -6,7 +6,7 @@ import 'package:my_dog_app/controller/passeador_controller.dart';
 import 'package:my_dog_app/models/passeador_model.dart';
 
 class PainelPasseador extends StatefulWidget {
-  final String emailLogado; // email do passeador logado
+  final String emailLogado;
 
   const PainelPasseador({super.key, required this.emailLogado});
 

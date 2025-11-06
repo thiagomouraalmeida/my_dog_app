@@ -7,7 +7,7 @@ import 'package:my_dog_app/service/passeador_service.dart';
 import 'package:provider/provider.dart';
 
 class TelaInicial extends StatefulWidget {
-  const TelaInicial({Key? key}) : super(key: key);
+  const TelaInicial({super.key});
 
   @override
   State<TelaInicial> createState() => _TelaInicialState();

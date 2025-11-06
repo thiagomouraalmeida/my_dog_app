@@ -1,5 +1,4 @@
 import 'package:go_router/go_router.dart';
-import 'package:my_dog_app/controller/pet_controller.dart';
 import 'package:my_dog_app/models/dono_model.dart';
 import 'package:my_dog_app/models/passeador_model.dart';
 import 'package:my_dog_app/views/tela_cadastro.dart';

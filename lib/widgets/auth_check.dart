@@ -4,7 +4,6 @@ import 'package:my_dog_app/service/auth_service.dart';
 import 'package:my_dog_app/views/tela_login.dart';
 import 'package:my_dog_app/views/tela_painel_dono.dart';
 import 'package:my_dog_app/views/tela_painel_passeador.dart';
-import 'package:my_dog_app/service/auth_service.dart';
 
 class AuthCheck extends StatefulWidget {
   const AuthCheck({super.key});
@@ -36,7 +35,7 @@ class _AuthCheckState extends State<AuthCheck> {
     } else if (auth.funcaoUsuario == 'passeador') {
       return PainelPasseador(emailLogado: auth.usuario!.email!);
     } else {
-      return const telaLogin(); 
+      return const telaLogin();
     }
   }
 }

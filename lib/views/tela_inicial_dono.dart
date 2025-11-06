@@ -4,6 +4,7 @@ import 'package:my_dog_app/views/tela_meus_pets.dart';
 import 'package:my_dog_app/views/tela_painel_dono.dart';
 import 'package:my_dog_app/views/tela_passeios.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:my_dog_app/views/tela_passeios_aceitos_dono.dart';
 
 class TelaInicialDono extends StatefulWidget {
   final Dono dono;
@@ -35,11 +36,10 @@ class _TelaInicialDonoState extends State<TelaInicialDono> {
       body: PageView(
         controller: pc,
         children: [
-          PainelDono(
-            emailLogado: widget.dono.email,
-          ), // <- passei o email do dono logado
+          PainelDono(emailLogado: widget.dono.email),
           MeusPets(),
-          Passeios(),
+          Passeios(donoId: widget.dono.id, enderecoDono: widget.dono.endereco),
+          PasseiosDono(donoId: widget.dono.id),
         ],
         onPageChanged: (value) {
           setState(() {
@@ -49,12 +49,19 @@ class _TelaInicialDonoState extends State<TelaInicialDono> {
       ),
 
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.white,
+        selectedItemColor: Colors.blueAccent,
+        unselectedItemColor: Colors.grey,
         currentIndex: paginaAtual,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Painel"),
           BottomNavigationBarItem(icon: Icon(Icons.pets), label: "Meus Pets"),
           BottomNavigationBarItem(
             icon: FaIcon(FontAwesomeIcons.dog),
+            label: 'Novo Passeio',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.directions_walk),
             label: 'Passeios',
           ),
         ],

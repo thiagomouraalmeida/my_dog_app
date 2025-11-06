@@ -1,96 +1,53 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
-class PasseiosPasseador extends StatefulWidget {
-  const PasseiosPasseador({super.key});
+class PasseiosPasseador extends StatelessWidget {
+  final String passeadorId;
 
-  @override
-  State<PasseiosPasseador> createState() => _PasseiosPasseadorState();
-}
+  const PasseiosPasseador({super.key, required this.passeadorId});
 
-class _PasseiosPasseadorState extends State<PasseiosPasseador> {
-  // Mock de passeios (simulação)
-  List<Map<String, dynamic>> passeios = [
-    {
-      "id": "1",
-      "cachorro": "Rex",
-      "dono": "João Silva",
-      "data": DateTime.now().add(Duration(hours: 2)),
-      "status": "solicitado",
-    },
-    {
-      "id": "2",
-      "cachorro": "Luna",
-      "dono": "Maria Oliveira",
-      "data": DateTime.now().add(Duration(days: 1)),
-      "status": "solicitado",
-    },
-  ];
-
-  void aceitarPasseio(String id) {
-    setState(() {
-      passeios = passeios.map((p) {
-        if (p["id"] == id) {
-          p["status"] = "aceito";
-        }
-        return p;
-      }).toList();
-    });
-  }
-
-  void recusarPasseio(String id) {
-    setState(() {
-      passeios = passeios.map((p) {
-        if (p["id"] == id) {
-          p["status"] = "recusado";
-        }
-        return p;
-      }).toList();
-    });
+  Future<void> aceitarPasseio(String passeioId) async {
+    await FirebaseFirestore.instance
+        .collection("passeios")
+        .doc(passeioId)
+        .update({"passeadorId": passeadorId, "status": "aceito"});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Meus Passeios")),
-      body: ListView.builder(
-        itemCount: passeios.length,
-        itemBuilder: (context, index) {
-          final passeio = passeios[index];
-          return Card(
-            margin: const EdgeInsets.all(8),
-            child: ListTile(
-              leading: Icon(Icons.pets, color: Colors.blue),
-              title: Text("${passeio["cachorro"]} (${passeio["dono"]})"),
-              subtitle: Text(
-                "Data: ${passeio["data"].day}/${passeio["data"].month} "
-                "às ${passeio["data"].hour}:${passeio["data"].minute.toString().padLeft(2, '0')}\n"
-                "Status: ${passeio["status"]}",
-              ),
-              isThreeLine: true,
-              trailing: passeio["status"] == "solicitado"
-                  ? Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.check, color: Colors.green),
-                          onPressed: () => aceitarPasseio(passeio["id"]),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.close, color: Colors.red),
-                          onPressed: () => recusarPasseio(passeio["id"]),
-                        ),
-                      ],
-                    )
-                  : Text(
-                      passeio["status"].toUpperCase(),
-                      style: TextStyle(
-                        color: passeio["status"] == "aceito"
-                            ? Colors.green
-                            : Colors.red,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-            ),
+      appBar: AppBar(title: const Text("Passeios Pendentes")),
+      body: StreamBuilder<QuerySnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection("passeios")
+            .where("status", isEqualTo: "pendente")
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final docs = snapshot.data!.docs;
+
+          if (docs.isEmpty) {
+            return const Center(child: Text("Nenhum passeio pendente."));
+          }
+
+          return ListView.builder(
+            itemCount: docs.length,
+            itemBuilder: (context, index) {
+              final doc = docs[index];
+              final data = doc.data() as Map<String, dynamic>;
+
+              return ListTile(
+                title: Text("Pet: ${data['pet']}"),
+                subtitle: Text("${data['endereco']} - ${data['data']}"),
+                trailing: ElevatedButton(
+                  onPressed: () => aceitarPasseio(doc.id),
+                  child: const Text("Aceitar"),
+                ),
+              );
+            },
           );
         },
       ),
